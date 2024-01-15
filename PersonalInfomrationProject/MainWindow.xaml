@@ -1,0 +1,195 @@
+﻿<Window x:Class="PersonalInfomrationProject.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converters="clr-namespace:PersonalInfomrationProject.Helpers"
+        xmlns:validationRules="clr-namespace:PersonalInfomrationProject.ValidationRules"
+        xmlns:local="clr-namespace:PersonalInfomrationProject"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Window.Resources>
+        <converters:FemaleGenderConverter x:Key="femaleGenderConverter"/>
+        <converters:MaleGenderConverter x:Key="maleGenderConverter"/>
+        <converters:SaveButtonTextConverter x:Key="saveButtonTextConverter"/>
+        <converters:DeleteButtonVisiblityConverter x:Key="deleteButtonVisiblityConverter"/>
+
+    </Window.Resources>
+
+    <Grid>
+        <ScrollViewer>
+            <TabControl >
+                <TabItem Header="Personal Information">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <!--User form-->
+                        <StackPanel Width="400">
+
+                            <Label Content="First Name"/>
+                            <TextBox  >
+                                <TextBox.Text>
+                                    <Binding Path="personalInformation.FirstName" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <validationRules:RequiredValidationRule></validationRules:RequiredValidationRule>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox">
+                                        <Style.Triggers>
+                                            <Trigger Property="Validation.HasError" Value="True">
+                                                <Setter Property="ToolTip" Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors)/ErrorContent}"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+
+                            <Label Content="Last Name"/>
+                            <TextBox  >
+                                <TextBox.Text>
+                                    <Binding Path="personalInformation.LastName" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <validationRules:RequiredValidationRule></validationRules:RequiredValidationRule>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox">
+                                        <Style.Triggers>
+                                            <Trigger Property="Validation.HasError" Value="True">
+                                                <Setter Property="ToolTip" Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors)/ErrorContent}"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+
+
+                            <Label Content="Date of Birth"/>
+                            <DatePicker SelectedDate="{Binding personalInformation.Dob,Mode=TwoWay}" Name="dobCal"/>
+
+                            <Label Content="Email"/>
+                            <TextBox >
+                                <TextBox.Text>
+                                    <Binding Path="personalInformation.Email" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <validationRules:EmailValidationRule></validationRules:EmailValidationRule>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox">
+                                        <Style.Triggers>
+                                            <Trigger Property="Validation.HasError" Value="True">
+                                                <Setter Property="ToolTip" Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors)/ErrorContent}"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+
+
+                            <Label Content="Gender"/>
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton Content="Male" GroupName="Gender" IsChecked="{Binding personalInformation.Gender, Converter={StaticResource maleGenderConverter}}" Command="{Binding GenderCommand}" CommandParameter="MALE" />
+                                <RadioButton Content="Female" Command="{Binding GenderCommand}" IsChecked="{Binding personalInformation.Gender, Converter={StaticResource femaleGenderConverter}}" CommandParameter="FEMALE" Margin="10,0,0,0" GroupName="Gender"/>
+                            </StackPanel>
+
+                            <Label Content="Phone"/>
+                            <TextBox>
+                                <TextBox.Text>
+                                    <Binding Path="personalInformation.Phone" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <validationRules:RequiredValidationRule></validationRules:RequiredValidationRule>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox">
+                                        <Style.Triggers>
+                                            <Trigger Property="Validation.HasError" Value="True">
+                                                <Setter Property="ToolTip" Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors)/ErrorContent}"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+
+
+                            <Label Content="Language"/>
+                            <ComboBox ItemsSource="{Binding Languages,Mode=OneWay}" SelectedItem="{Binding personalInformation.Language,Mode=TwoWay}"/>
+                            <Button Margin="0,10,0,0" Content="{Binding personalInformation.Id, Converter={StaticResource saveButtonTextConverter}}" Command="{Binding SaveCommand}"></Button>
+                            <Button Margin="0,10,0,0" Content="Clear" Command="{Binding CleanCommand}"></Button>
+                            <Button Margin="0,10,0,0" Content="Delete" Visibility="{Binding personalInformation.Id, Converter={StaticResource deleteButtonVisiblityConverter}}" Command="{Binding DeleteCommand}"></Button>
+                        </StackPanel>
+                        <Grid Grid.Row="1">
+                            <DataGrid Width="400" ItemsSource="{Binding personalInformationList, Mode=OneWay}" 
+                             AutoGenerateColumns="False" Margin="10" Background="White" 
+                             MouseDoubleClick="DataGrid_MouseDoubleClick"
+                             CanUserAddRows="False"
+                             RowBackground="LightYellow" AlternatingRowBackground="LightBlue" IsReadOnly="True" 
+                             HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Visible">
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn Header="First Name">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding FirstName}"></TextBlock>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="Last Name">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding LastName}"></TextBlock>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="Date of Birth">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Dob}"></TextBlock>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="Email">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Email}"></TextBlock>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="Gender">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Gender}"></TextBlock>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="Phone">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Phone}"></TextBlock>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="Language">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Language}"></TextBlock>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </ScrollViewer>
+
+    </Grid>
+</Window>
